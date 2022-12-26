@@ -11,10 +11,12 @@ let tweets = [
     {
         id: "1",
         text: "first",
+        userId: "2"
     },
     {
         id: "2",
         text: "second",
+        userId: "1"
     },
 ];
 
@@ -43,6 +45,7 @@ const typeDefs = gql`
       id: ID!
       text: String!
       author: User
+      userId: String
     }
 
     type Query {
@@ -85,9 +88,18 @@ const resolvers = {
             const newTweet = {
                 id: tweets.length + 1,
                 text,
+                userId,
             };
-            tweets.push(newTweet);
-            return newTweet;
+
+            // tweets.push(newTweet);
+            // return newTweet
+            if(users.find((user) => user.id === userId)) {
+                tweets.push(newTweet);
+                return newTweet
+            }
+            else {
+                return;
+            }
         },
         deleteTweet(_, {id}) {
             const tweet = tweets.find(tweet => tweet.id === id);
@@ -101,6 +113,11 @@ const resolvers = {
             // console.log("fullName called");
             // console.log(root);
             return `${firstName} ${lastName}`;
+        }
+    },
+    Tweet: {
+        author({userId}) {
+            return users.find((user) => user.id === userId);
         }
     }
 };
