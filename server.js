@@ -7,7 +7,7 @@ import { ApolloServer, gql } from "apollo-server";
 // SDL: gql `SDL` : Schema Definition Language
 // Query type: Mandatory
 
-const tweets = [
+let tweets = [
     {
         id: "1",
         text: "first",
@@ -58,10 +58,26 @@ const resolvers = {
             return tweets;
         },
         tweet(root, {id}) {
-            console.log(id);
+            // console.log(id);
             return tweets.find((tweet) => tweet.id === id);
         },
     },
+    Mutation: {
+        postTweet(_, {text, userId}) {
+            const newTweet = {
+                id: tweets.length + 1,
+                text,
+            };
+            tweets.push(newTweet);
+            return newTweet;
+        },
+        deleteTweet(_, {id}) {
+            const tweet = tweets.find(tweet => tweet.id === id);
+            if(!tweet)  return false;
+            tweets = tweets.filter(tweet => tweet.id !== id);
+            return true;
+        }
+    }
 };
 
 const server = new ApolloServer({typeDefs, resolvers})
